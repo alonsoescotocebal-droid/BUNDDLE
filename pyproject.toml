@@ -1,0 +1,10 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sll_probabilistic_pipeline"
+version = "0.1.0"
+description = "SLL probabilistic pipeline Phase 01A identity inventory"
+requires-python = ">=3.14"
+

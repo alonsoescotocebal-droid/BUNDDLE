@@ -1,0 +1,16 @@
+{
+  "generated_at_utc": "2026-06-22T18:19:42.316901+00:00",
+  "identity_go_state_if_full_release_were_attempted": "external_validation_required",
+  "kin_root": "D:\\INTERDEPDNDENCIA_ARTIGOS_ANA\\INTERDEPENDENCIA_ANA_ARTIGOS\\Rates calculations\\SLL_rates_block_20260426_133037",
+  "outputs": [
+    "growth_variable_identity_audit.tsv",
+    "acetate_dual_role_audit.tsv",
+    "canonical_component_alias_registry.tsv",
+    "component_role_by_condition_audit.tsv",
+    "cross_layer_join_identity_policy.tsv"
+  ],
+  "phase": "phase01a",
+  "phase_status": "phase01a_complete_waiting_for_phase01b_approval",
+  "stat_identity_run": "D:\\INTERDEPDNDENCIA_ARTIGOS_ANA\\INTERDEPENDENCIA_ANA_ARTIGOS\\runs\\SLL_REAL_PCMCI_LAG01-04_20260401_174816\\SLL_REAL_PCMCI_LAG01_20260401_174816",
+  "stat_root": "D:\\INTERDEPDNDENCIA_ARTIGOS_ANA\\INTERDEPENDENCIA_ANA_ARTIGOS\\runs\\SLL_REAL_PCMCI_LAG01-04_20260401_174816"
+}

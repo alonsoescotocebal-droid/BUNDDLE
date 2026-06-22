@@ -1,0 +1,122 @@
+{
+  "contract_id": "SLL_CODEX_MACHINE_READABLE_RULES_v1",
+  "purpose": "Machine-readable rules for Codex and the Python pipeline.",
+  "data_roots": {
+    "statistical_parent": "D:\\INTERDEPDNDENCIA_ARTIGOS_ANA\\INTERDEPENDENCIA_ANA_ARTIGOS\\runs",
+    "statistical_expected_run": "D:\\INTERDEPDNDENCIA_ARTIGOS_ANA\\INTERDEPENDENCIA_ANA_ARTIGOS\\runs\\SLL_REAL_PCMCI_LAG01-04_20260401_174816",
+    "kinetic_parent": "D:\\INTERDEPDNDENCIA_ARTIGOS_ANA\\INTERDEPENDENCIA_ANA_ARTIGOS\\Rates calculations",
+    "kinetic_expected_run": "D:\\INTERDEPDNDENCIA_ARTIGOS_ANA\\INTERDEPENDENCIA_ANA_ARTIGOS\\Rates calculations\\SLL_rates_block_20260426_133037"
+  },
+  "must_read_markdown_first": [
+    "SLL_DATA_CONSUMPTION_AND_INPUT_READER_SPEC_v1.md",
+    "SLL_PROBABILISTIC_CALCULATION_CONTRACT_v1.md",
+    "SLL_22_QUESTIONS_RUNTIME_QA_CONTRACT_v1.md",
+    "SLL_ACCEPTANCE_TESTS_AND_DONE_DEFINITION_v1.md"
+  ],
+  "data_basis_rules": {
+    "statistical": {
+      "basis": "audited_interpolated_dense_matrix_anchored_to_real_observations",
+      "allowed": true,
+      "roles": [
+        "descriptive_temporal_state",
+        "interdependence_window_evidence",
+        "conditioned_pair_evidence",
+        "pcmci_temporal_evidence"
+      ],
+      "required_trace": [
+        "source_path",
+        "source_surface",
+        "source_row_key",
+        "source_row_number",
+        "is_interpolated",
+        "gate_or_status",
+        "audit_status"
+      ],
+      "prohibitions": [
+        "do_not_treat_interpolation_as_new_experimental_measurement",
+        "do_not_remove_interpolation_traceability",
+        "do_not_rank_lags_as_global_priority"
+      ]
+    },
+    "kinetic": {
+      "basis": "real_only_experimental_observations",
+      "allowed": true,
+      "enabled_branch": "real_only",
+      "disabled_branches": [
+        "real_plus_interpolated"
+      ],
+      "roles": [
+        "growth_likelihood",
+        "metabolite_rate_likelihood",
+        "temporal_coupling_likelihood",
+        "yield_likelihood_if_real_only_handoff_nonempty_and_audit_pass"
+      ],
+      "prohibitions": [
+        "do_not_use_real_plus_interpolated_for_kinetic_support",
+        "do_not_mix_real_and_interpolated_for_kinetic_likelihood",
+        "do_not_use_empty_yield_handoff_as_support"
+      ]
+    }
+  },
+  "lag_rules": {
+    "run_max_lag_field": "parsed from LAGXX run folder name",
+    "edge_lag_field": "read from results/effects.tsv lag column",
+    "global_lag_priority": "forbidden",
+    "required_lag_outputs": [
+      "P_signal_LAG01",
+      "P_signal_LAG02",
+      "P_signal_LAG03",
+      "P_signal_LAG04",
+      "P_fast",
+      "P_intermediate",
+      "P_late",
+      "P_persistent",
+      "P_conflict"
+    ]
+  },
+  "probability_rules": {
+    "probability_target": "posterior support probability for relational states",
+    "forbidden_interpretation": [
+      "causal_probability",
+      "mechanistic_certainty",
+      "experimental_intervention_decision"
+    ],
+    "preferred_calibration": [
+      "empirical_null",
+      "local_fdr",
+      "block_bootstrap_or_block_permutation",
+      "conservative_bayes_factor_fallback"
+    ],
+    "allowed_states": [
+      "no_internal_signal",
+      "positive_temporal_support",
+      "negative_temporal_support",
+      "basal_axis_compatible",
+      "perturbation_reconfiguration",
+      "growth_associated_support",
+      "conditioned_pair_only",
+      "kinetic_support_only",
+      "contextual_only",
+      "external_validation_required",
+      "internal_failure_localized"
+    ]
+  },
+  "final_decision_rule": {
+    "GO_allowed_if": [
+      "all_22_questions_exist",
+      "valid_state_for_each_question",
+      "no_internal_failure_localized",
+      "all_mandatory_artifacts_present",
+      "no_raw_data_overwrite",
+      "runtime_validator_passes"
+    ],
+    "NO_GO_if": [
+      "any_internal_failure_localized",
+      "missing_mandatory_surface",
+      "kinetic_real_plus_interpolated_used_as_support",
+      "lag_priority_default_used",
+      "probability_claimed_as_causal_truth",
+      "source_trace_missing"
+    ]
+  }
+}
