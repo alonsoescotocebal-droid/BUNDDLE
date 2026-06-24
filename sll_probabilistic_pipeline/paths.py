@@ -11,7 +11,9 @@ from .config import (
     KINETIC_REAL_ONLY_OPTIONAL_SURFACES,
     KINETIC_REAL_ONLY_REQUIRED_SURFACES,
     PHASE01B_REPO_OUTPUT_REJECTION_CODE,
+    PHASE01B_JOIN_REPAIR_RUNTIME_PREFIX,
     PHASE01B_RUNTIME_PREFIX,
+    PHASE01B_REQUIRED_OUTPUTS,
     SCENARIO_ALIASES,
     STAT_RUN_REQUIRED_SURFACES,
 )
@@ -77,6 +79,18 @@ class ResolvedPhase01BPaths:
     kin_report_output_catalog: Path
     kin_report_contract_summary: Path
     kin_report_contract_metrics: Path
+
+
+@dataclass(frozen=True)
+class ResolvedPhase01BJoinRepairPaths:
+    repo_root: Path
+    phase01b_runtime: Path
+    requested_out_root: Path
+    allowed_results_root: Path
+    runtime_root: Path
+    input_manifest: Path
+    input_validation_summary: Path
+    input_join_audit: Path
 
 
 LAG_FOLDER_RE = re.compile(r"^SLL_REAL_PCMCI_LAG(?P<lag>\d{2})_")
@@ -260,4 +274,58 @@ def resolve_phase01b_paths(
         kin_report_output_catalog=kin_root_path / "report_output_catalog.tsv",
         kin_report_contract_summary=kin_root_path / "report_contract_summary.json",
         kin_report_contract_metrics=kin_root_path / "report_contract_metrics.tsv",
+    )
+
+
+def resolve_phase01b_join_repair_paths(
+    repo_root: str | Path,
+    phase01b_runtime: str | Path,
+    out_root: str | Path,
+) -> ResolvedPhase01BJoinRepairPaths:
+    repo_root_path = Path(repo_root).resolve(strict=False)
+    phase01b_runtime_path = Path(phase01b_runtime).resolve(strict=False)
+    requested_out_root = Path(out_root).resolve(strict=False)
+    allowed_results_root = DEFAULT_RESULTS_ROOT.resolve(strict=False)
+
+    if requested_out_root == repo_root_path or is_same_or_within(requested_out_root, repo_root_path):
+        raise Phase01BPathError(
+            PHASE01B_REPO_OUTPUT_REJECTION_CODE,
+            f"{PHASE01B_REPO_OUTPUT_REJECTION_CODE}: out-root {requested_out_root} is inside repo {repo_root_path}",
+        )
+    if not is_same_or_within(requested_out_root, allowed_results_root):
+        raise Phase01BPathError(
+            "PHASE01B_OUTPUT_ROOT_OUTSIDE_ALLOWED_RESULTS_ROOT",
+            f"out-root {requested_out_root} is outside allowed results root {allowed_results_root}",
+        )
+    if not is_same_or_within(phase01b_runtime_path, allowed_results_root):
+        raise Phase01BPathError(
+            "PHASE01B_RUNTIME_OUTSIDE_ALLOWED_RESULTS_ROOT",
+            f"phase01b-runtime {phase01b_runtime_path} is outside allowed results root {allowed_results_root}",
+        )
+
+    required_paths = [
+        repo_root_path,
+        phase01b_runtime_path,
+        phase01b_runtime_path / "manifest" / "runtime_manifest.json",
+        phase01b_runtime_path / "audit" / "phase01b_validation_summary.tsv",
+        phase01b_runtime_path / "data" / "input_join_key_audit.tsv",
+    ]
+    required_paths.extend(
+        phase01b_runtime_path / Path(relative_path.replace("/", "\\"))
+        for relative_path in PHASE01B_REQUIRED_OUTPUTS
+    )
+    missing = [str(path) for path in required_paths if not path.exists()]
+    if missing:
+        raise FileNotFoundError("Missing required Phase 01B runtime artifacts: " + "; ".join(missing))
+
+    runtime_root = requested_out_root / f"{PHASE01B_JOIN_REPAIR_RUNTIME_PREFIX}{utc_stamp()}"
+    return ResolvedPhase01BJoinRepairPaths(
+        repo_root=repo_root_path,
+        phase01b_runtime=phase01b_runtime_path,
+        requested_out_root=requested_out_root,
+        allowed_results_root=allowed_results_root,
+        runtime_root=runtime_root,
+        input_manifest=phase01b_runtime_path / "manifest" / "runtime_manifest.json",
+        input_validation_summary=phase01b_runtime_path / "audit" / "phase01b_validation_summary.tsv",
+        input_join_audit=phase01b_runtime_path / "data" / "input_join_key_audit.tsv",
     )

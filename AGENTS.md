@@ -70,6 +70,7 @@ At minimum, run:
 python -m py_compile <all_project_python_files>
 python -m pytest -q
 python -m sll_probabilistic_pipeline.cli --stat-root "D:\INTERDEPDNDENCIA_ARTIGOS_ANA\INTERDEPENDENCIA_ANA_ARTIGOS\runs\SLL_REAL_PCMCI_LAG01-04_20260401_174816" --kin-root "D:\INTERDEPDNDENCIA_ARTIGOS_ANA\INTERDEPENDENCIA_ANA_ARTIGOS\Rates calculations\SLL_rates_block_20260426_133037" --out-root <runtime_output>
+python -m sll_probabilistic_pipeline.cli --phase phase01b_join_repair --repo-root "D:\INTERDEPDNDENCIA_ARTIGOS_ANA\PREDICTOR PROBABILIDAD\PREDICTOR\BUNDDLE" --phase01b-runtime "D:\INTERDEPDNDENCIA_ARTIGOS_ANA\PREDICTOR PROBABILIDAD\PREDICTOR RESULTADOS\SLL_PHASE01B_NORMALIZED_INPUT_READER_20260624_093603" --out-root "D:\INTERDEPDNDENCIA_ARTIGOS_ANA\PREDICTOR PROBABILIDAD\PREDICTOR RESULTADOS" --strict
 python -m sll_probabilistic_pipeline.validate_runtime --runtime <runtime_output>
 ```
 

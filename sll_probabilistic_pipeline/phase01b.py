@@ -20,7 +20,7 @@ from .io.readers import (
 )
 from .paths import ResolvedPhase01BPaths, resolve_phase01b_paths
 from .phase01a import build_phase01a_policy_artifacts, write_phase01a_policy_artifacts
-from .standardize.joins import build_input_join_key_audit
+from .standardize.joins import build_join_resolution_bundle
 from .standardize.kinetic import build_kinetic_outputs
 from .standardize.statistical import build_statistical_outputs
 from .utils import (
@@ -115,11 +115,12 @@ def run_phase01b(
         kinetic_surfaces,
         phase01a_artifacts["canonical_component_alias_registry.tsv"],
     )
-    join_audit_rows = build_input_join_key_audit(
+    join_bundle = build_join_resolution_bundle(
         phase01a_policy_rows=phase01a_artifacts,
         stat_outputs=stat_outputs,
         kinetic_outputs=kinetic_outputs,
     )
+    join_audit_rows = join_bundle["input_join_key_audit.tsv"]
 
     _write_table(
         manifest_dir / "input_file_sha256.tsv",

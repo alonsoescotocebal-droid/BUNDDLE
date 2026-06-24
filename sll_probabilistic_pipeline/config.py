@@ -16,8 +16,9 @@ DEFAULT_RESULTS_ROOT = Path(
     r"D:\INTERDEPDNDENCIA_ARTIGOS_ANA\PREDICTOR PROBABILIDAD\PREDICTOR RESULTADOS"
 )
 
-SUPPORTED_PHASES = {"phase01a", "phase01b"}
+SUPPORTED_PHASES = {"phase01a", "phase01b", "phase01b_join_repair"}
 PHASE01B_RUNTIME_PREFIX = "SLL_PHASE01B_NORMALIZED_INPUT_READER_"
+PHASE01B_JOIN_REPAIR_RUNTIME_PREFIX = "SLL_PHASE01B_JOIN_ROOT_CAUSE_REPAIR_"
 PHASE01B_REPO_OUTPUT_REJECTION_CODE = "PHASE01B_OUTPUT_ROOT_INSIDE_REPO_FORBIDDEN"
 
 PHASE01A_OUTPUTS = (
@@ -57,6 +58,21 @@ PHASE01B_REQUIRED_OUTPUTS = (
     "audit/output_root_boundary_audit.tsv",
     "audit/repo_contamination_audit.tsv",
     "audit/phase01b_validation_summary.tsv",
+)
+PHASE01B_JOIN_REPAIR_REQUIRED_OUTPUTS = (
+    "manifest/runtime_manifest.json",
+    "data/input_join_key_audit_original.tsv",
+    "data/input_join_key_audit.tsv",
+    "data/many_to_many_origin_diagnostic.tsv",
+    "data/per_surface_natural_key_profile.tsv",
+    "data/candidate_key_uniqueness_profile.tsv",
+    "data/lag_invariant_duplicate_origin_audit.tsv",
+    "data/policy_surface_non_joinable_registry.tsv",
+    "data/join_admissibility_contract.tsv",
+    "data/phase02_join_contract.tsv",
+    "audit/output_root_boundary_audit.tsv",
+    "audit/repo_contamination_audit.tsv",
+    "audit/many_to_many_root_cause_validation_summary.tsv",
 )
 
 STAT_RUN_REQUIRED_SURFACES = (

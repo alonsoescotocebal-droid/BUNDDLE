@@ -303,12 +303,10 @@ def build_phase01b_validation_summary(
     )
 
     many_to_many_count = sum(1 for row in join_audit_rows if row.get("many_to_many_risk") == "yes")
-    if not join_exists:
+    unresolved_count = sum(1 for row in join_audit_rows if row.get("resolution_state") not in {"resolved", "policy_defined"})
+    if not join_exists or unresolved_count > 0:
         join_risk_status = "FAIL"
         join_risk_severity = "error"
-    elif many_to_many_count > 0:
-        join_risk_status = "WARN"
-        join_risk_severity = "warning"
     else:
         join_risk_status = "PASS"
         join_risk_severity = "info"
@@ -319,7 +317,10 @@ def build_phase01b_validation_summary(
             join_risk_severity,
             "data/input_join_key_audit.tsv",
             "many_to_many_risk",
-            f"rows_with_risk={many_to_many_count};profiling_only_phase01b=yes",
+            (
+                f"historical_risk_rows={many_to_many_count};unresolved_rows={unresolved_count};"
+                "resolution_contract_required=yes"
+            ),
         )
     )
 

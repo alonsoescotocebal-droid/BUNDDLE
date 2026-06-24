@@ -58,12 +58,8 @@ class Phase01BSmokeTest(unittest.TestCase):
         self.assertTrue(self.REQUIRED_VALIDATION_CHECKS.issubset(check_ids))
 
         indexed = {row["check_id"]: row for row in rows if row["check_id"] in self.REQUIRED_VALIDATION_CHECKS}
-        for check_id in self.REQUIRED_VALIDATION_CHECKS - {"join_many_to_many_risk_profiled_not_joined"}:
+        for check_id in self.REQUIRED_VALIDATION_CHECKS:
             self.assertEqual(indexed[check_id]["status"], "PASS", check_id)
-        join_risk = indexed["join_many_to_many_risk_profiled_not_joined"]
-        self.assertIn(join_risk["status"], {"PASS", "WARN"})
-        if join_risk["status"] == "WARN":
-            self.assertEqual(join_risk["severity"], "warning")
 
     def test_cli_smoke_execution(self) -> None:
         command = [
