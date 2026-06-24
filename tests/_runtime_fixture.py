@@ -60,6 +60,11 @@ def phase01b_rows(filename: str) -> list[dict[str, str]]:
     return read_tsv(runtime_dir / "data" / filename)
 
 
+def phase01b_audit_rows(filename: str) -> list[dict[str, str]]:
+    runtime_dir, _ = build_phase01b_runtime()
+    return read_tsv(runtime_dir / "audit" / filename)
+
+
 def phase01b_manifest_payload() -> dict[str, object]:
     runtime_dir, _ = build_phase01b_runtime()
     return read_json(runtime_dir / "manifest" / "runtime_manifest.json")

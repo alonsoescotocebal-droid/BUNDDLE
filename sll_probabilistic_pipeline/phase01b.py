@@ -211,6 +211,7 @@ def run_phase01b(
     }
     write_json(manifest_dir / "runtime_manifest.json", manifest)
 
+    validation_path = audit_dir / "phase01b_validation_summary.tsv"
     required_for_validation = tuple(
         relative_path
         for relative_path in PHASE01B_REQUIRED_OUTPUTS
@@ -221,9 +222,38 @@ def run_phase01b(
         runtime_root=runtime_root,
         required_outputs=required_for_validation,
         discovered_lags=sorted(stat_surfaces.keys()),
+        output_root_boundary_rows=output_root_boundary_rows,
+        repo_contamination_rows=repo_contamination_rows,
+        manifest=manifest,
+        phase01a_carry_forward_rows=phase01a_carry_forward_rows,
+        availability_rows=availability_rows,
+        join_audit_rows=join_audit_rows,
+        stat_outputs=stat_outputs,
+        kinetic_outputs=kinetic_outputs,
+        empty_audit_rows=empty_audit_rows,
     )
     _write_table(
-        audit_dir / "phase01b_validation_summary.tsv",
+        validation_path,
+        validation_summary_rows,
+        preferred_order=["check_id", "status", "severity", "source_surface", "source_row_key", "details"],
+    )
+    validation_summary_rows = build_phase01b_validation_summary(
+        validation_rows=validation_rows,
+        runtime_root=runtime_root,
+        required_outputs=PHASE01B_REQUIRED_OUTPUTS,
+        discovered_lags=sorted(stat_surfaces.keys()),
+        output_root_boundary_rows=output_root_boundary_rows,
+        repo_contamination_rows=repo_contamination_rows,
+        manifest=manifest,
+        phase01a_carry_forward_rows=phase01a_carry_forward_rows,
+        availability_rows=availability_rows,
+        join_audit_rows=join_audit_rows,
+        stat_outputs=stat_outputs,
+        kinetic_outputs=kinetic_outputs,
+        empty_audit_rows=empty_audit_rows,
+    )
+    _write_table(
+        validation_path,
         validation_summary_rows,
         preferred_order=["check_id", "status", "severity", "source_surface", "source_row_key", "details"],
     )

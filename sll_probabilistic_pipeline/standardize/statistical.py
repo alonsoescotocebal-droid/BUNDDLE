@@ -110,7 +110,7 @@ def build_statistical_outputs(
             status = "PASS" if edge_lag <= run_max_lag else "FAIL"
             validation_rows.append(
                 {
-                    "check_id": "edge_lag_le_run_max_lag",
+                    "check_id": "edge_lag_le_run_max_lag_detail",
                     "status": status,
                     "severity": "error" if status == "FAIL" else "info",
                     "source_surface": "results/effects.tsv",
