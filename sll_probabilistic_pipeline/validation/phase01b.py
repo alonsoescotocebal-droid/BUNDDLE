@@ -39,12 +39,18 @@ def build_phase01b_validation_summary(
     manifest: dict[str, object],
     phase01a_carry_forward_rows: list[dict[str, object]],
     availability_rows: list[dict[str, object]],
-    join_audit_rows: list[dict[str, object]],
+    join_bundle: dict[str, list[dict[str, object]]],
     stat_outputs: dict[str, list[dict[str, object]]],
     kinetic_outputs: dict[str, list[dict[str, object]]],
     empty_audit_rows: list[dict[str, object]],
 ) -> list[dict[str, object]]:
     rows: list[dict[str, object]] = []
+    join_audit_rows = join_bundle["input_join_key_audit.tsv"]
+    diagnostic_rows = join_bundle["many_to_many_origin_diagnostic.tsv"]
+    lag_rows = join_bundle["lag_invariant_duplicate_origin_audit.tsv"]
+    registry_rows = join_bundle["policy_surface_non_joinable_registry.tsv"]
+    join_contract_rows = join_bundle["join_admissibility_contract.tsv"]
+    phase02_contract_rows = join_bundle["phase02_join_contract.tsv"]
 
     boundary = output_root_boundary_rows[0] if output_root_boundary_rows else {}
     boundary_ok = (
@@ -321,6 +327,77 @@ def build_phase01b_validation_summary(
                 f"historical_risk_rows={many_to_many_count};unresolved_rows={unresolved_count};"
                 "resolution_contract_required=yes"
             ),
+        )
+    )
+
+    diagnostic_ok = len(diagnostic_rows) == 3 and all(row.get("resolution_state") == "resolved" for row in diagnostic_rows)
+    rows.append(
+        _summary_row(
+            "many_to_many_origin_diagnostic_complete",
+            "PASS" if diagnostic_ok else "FAIL",
+            "info" if diagnostic_ok else "error",
+            "data/many_to_many_origin_diagnostic.tsv",
+            "diagnostic_rows",
+            f"row_count={len(diagnostic_rows)}",
+        )
+    )
+
+    lag_ok = bool(lag_rows) and all(
+        str(row.get("duplicate_count")) == "4" and str(row.get("distinct_run_max_lag_count")) == "4"
+        for row in lag_rows
+    )
+    rows.append(
+        _summary_row(
+            "lag_invariant_duplicate_origin_audit_complete",
+            "PASS" if lag_ok else "FAIL",
+            "info" if lag_ok else "error",
+            "data/lag_invariant_duplicate_origin_audit.tsv",
+            "lag_duplicate_rows",
+            f"row_count={len(lag_rows)}",
+        )
+    )
+
+    registry_ok = any(
+        row.get("surface_name") == "growth_variable_identity_audit.tsv"
+        and row.get("non_joinable_as_measurement") == "yes"
+        for row in registry_rows
+    )
+    rows.append(
+        _summary_row(
+            "policy_surface_non_joinable_registry_exists",
+            "PASS" if registry_ok else "FAIL",
+            "info" if registry_ok else "error",
+            "data/policy_surface_non_joinable_registry.tsv",
+            "growth_variable_identity_audit.tsv",
+            f"row_count={len(registry_rows)}",
+        )
+    )
+
+    join_contract_ok = len(join_contract_rows) == 3 and all(
+        row.get("resolution_state") == "resolved" for row in join_contract_rows
+    )
+    rows.append(
+        _summary_row(
+            "join_admissibility_contract_complete",
+            "PASS" if join_contract_ok else "FAIL",
+            "info" if join_contract_ok else "error",
+            "data/join_admissibility_contract.tsv",
+            "pair_contract_rows",
+            f"row_count={len(join_contract_rows)}",
+        )
+    )
+
+    phase02_ready = len(phase02_contract_rows) == 3 and all(
+        row.get("resolution_state") == "resolved" for row in phase02_contract_rows
+    )
+    rows.append(
+        _summary_row(
+            "phase02_join_contract_ready",
+            "PASS" if phase02_ready else "FAIL",
+            "info" if phase02_ready else "error",
+            "data/phase02_join_contract.tsv",
+            "phase02_pair_contract_rows",
+            f"row_count={len(phase02_contract_rows)}",
         )
     )
 

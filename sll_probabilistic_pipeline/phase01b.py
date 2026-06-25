@@ -20,7 +20,7 @@ from .io.readers import (
 )
 from .paths import ResolvedPhase01BPaths, resolve_phase01b_paths
 from .phase01a import build_phase01a_policy_artifacts, write_phase01a_policy_artifacts
-from .standardize.joins import build_join_resolution_bundle
+from .standardize.joins import build_join_resolution_bundle, join_output_preferred_order
 from .standardize.kinetic import build_kinetic_outputs
 from .standardize.statistical import build_statistical_outputs
 from .utils import (
@@ -120,7 +120,6 @@ def run_phase01b(
         stat_outputs=stat_outputs,
         kinetic_outputs=kinetic_outputs,
     )
-    join_audit_rows = join_bundle["input_join_key_audit.tsv"]
 
     _write_table(
         manifest_dir / "input_file_sha256.tsv",
@@ -164,11 +163,12 @@ def run_phase01b(
             rows,
             preferred_order=_preferred_order_for_output(filename),
         )
-    _write_table(
-        data_dir / "input_join_key_audit.tsv",
-        join_audit_rows,
-        preferred_order=list(join_audit_rows[0].keys()),
-    )
+    for filename, rows in join_bundle.items():
+        _write_table(
+            data_dir / filename,
+            rows,
+            preferred_order=_preferred_order_for_output(filename),
+        )
     _write_table(
         data_dir / "input_empty_surface_audit.tsv",
         empty_audit_rows or [
@@ -228,7 +228,7 @@ def run_phase01b(
         manifest=manifest,
         phase01a_carry_forward_rows=phase01a_carry_forward_rows,
         availability_rows=availability_rows,
-        join_audit_rows=join_audit_rows,
+        join_bundle=join_bundle,
         stat_outputs=stat_outputs,
         kinetic_outputs=kinetic_outputs,
         empty_audit_rows=empty_audit_rows,
@@ -248,7 +248,7 @@ def run_phase01b(
         manifest=manifest,
         phase01a_carry_forward_rows=phase01a_carry_forward_rows,
         availability_rows=availability_rows,
-        join_audit_rows=join_audit_rows,
+        join_bundle=join_bundle,
         stat_outputs=stat_outputs,
         kinetic_outputs=kinetic_outputs,
         empty_audit_rows=empty_audit_rows,
@@ -491,6 +491,9 @@ def _build_repo_contamination_audit(
 
 
 def _preferred_order_for_output(filename: str) -> list[str]:
+    join_order = join_output_preferred_order(filename)
+    if join_order:
+        return join_order
     if filename == "stat_pcmci_edge_long.tsv":
         return [
             "source_layer",

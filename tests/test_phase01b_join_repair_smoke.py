@@ -8,8 +8,8 @@ from pathlib import Path
 from sll_probabilistic_pipeline.config import DEFAULT_RESULTS_ROOT
 
 from ._runtime_fixture import (
-    APPROVED_PHASE01B_RUNTIME,
     REPO_ROOT,
+    build_phase01b_runtime,
     build_phase01b_join_repair_runtime,
     phase01b_join_repair_audit_rows,
 )
@@ -50,6 +50,7 @@ class Phase01BJoinRepairSmokeTest(unittest.TestCase):
             self.assertEqual(row["severity"], "info", row["check_id"])
 
     def test_cli_smoke_execution(self) -> None:
+        phase01b_runtime, _ = build_phase01b_runtime()
         command = [
             sys.executable,
             "-m",
@@ -59,7 +60,7 @@ class Phase01BJoinRepairSmokeTest(unittest.TestCase):
             "--repo-root",
             str(REPO_ROOT),
             "--phase01b-runtime",
-            str(APPROVED_PHASE01B_RUNTIME),
+            str(phase01b_runtime),
             "--out-root",
             str(DEFAULT_RESULTS_ROOT),
             "--strict",

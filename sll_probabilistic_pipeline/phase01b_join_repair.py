@@ -6,7 +6,7 @@ from pathlib import Path
 
 from .config import PHASE01A_OUTPUTS, PHASE01B_JOIN_REPAIR_REQUIRED_OUTPUTS
 from .paths import ResolvedPhase01BJoinRepairPaths, resolve_phase01b_join_repair_paths
-from .standardize.joins import build_join_resolution_bundle
+from .standardize.joins import build_join_resolution_bundle, join_output_preferred_order
 from .utils import (
     ensure_dir,
     fieldnames_from_rows,
@@ -305,75 +305,7 @@ def _build_repo_contamination_audit(
 
 
 def _preferred_order_for_output(filename: str) -> list[str]:
-    if filename == "input_join_key_audit.tsv":
-        return [
-            "left_surface",
-            "right_surface",
-            "candidate_keys",
-            "normalized_keys",
-            "comparison_keys",
-            "left_natural_key",
-            "right_natural_key",
-            "null_rate_by_key",
-            "unique_key_rate",
-            "many_to_many_risk",
-            "match_rate",
-            "unmatched_left_count",
-            "unmatched_right_count",
-            "left_row_count",
-            "right_row_count",
-            "left_max_multiplicity",
-            "right_max_multiplicity",
-            "max_cartesian_expansion",
-            "missing_key_dimensions",
-            "duplicate_origin",
-            "join_admissibility",
-            "resolution_state",
-            "notes",
-        ]
-    if filename == "many_to_many_origin_diagnostic.tsv":
-        return [
-            "left_surface",
-            "right_surface",
-            "current_comparison_keys",
-            "left_row_count",
-            "right_row_count",
-            "left_unique_key_rate_current",
-            "right_unique_key_rate_current",
-            "left_max_multiplicity_current",
-            "right_max_multiplicity_current",
-            "max_cartesian_expansion_current",
-            "left_natural_key",
-            "right_natural_key",
-            "left_unique_key_rate_natural",
-            "right_unique_key_rate_natural",
-            "left_max_multiplicity_natural",
-            "right_max_multiplicity_natural",
-            "missing_key_dimensions",
-            "duplicate_origin",
-            "root_cause_kind",
-            "join_admissibility",
-            "resolution_state",
-            "notes",
-        ]
-    if filename == "lag_invariant_duplicate_origin_audit.tsv":
-        return [
-            "surface_name",
-            "condition_id",
-            "scenario_canonical",
-            "condition_role",
-            "replicate",
-            "canonical_component_id",
-            "descriptive_measure_type",
-            "timepoint_label",
-            "window_label",
-            "duplicate_count",
-            "distinct_run_max_lag_count",
-            "run_max_lag_values",
-            "duplicate_origin",
-            "dedup_policy",
-        ]
-    return []
+    return join_output_preferred_order(filename)
 
 
 def _write_table(path: Path, rows: list[dict[str, object]], *, preferred_order: list[str]) -> None:

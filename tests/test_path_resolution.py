@@ -14,7 +14,7 @@ from sll_probabilistic_pipeline.paths import Phase01BPathError
 from sll_probabilistic_pipeline.phase01b import run_phase01b
 from sll_probabilistic_pipeline.phase01b_join_repair import run_phase01b_join_repair
 
-from ._runtime_fixture import APPROVED_PHASE01B_RUNTIME, REPO_ROOT, build_phase01b_join_repair_runtime, build_phase01b_runtime
+from ._runtime_fixture import REPO_ROOT, build_phase01b_join_repair_runtime, build_phase01b_runtime
 
 
 class PathResolutionTest(unittest.TestCase):
@@ -49,10 +49,11 @@ class PathResolutionTest(unittest.TestCase):
         self.assertEqual(Path(manifest["runtime_root"]), runtime_dir)
 
     def test_join_repair_out_root_inside_repo_is_rejected(self) -> None:
+        phase01b_runtime, _ = build_phase01b_runtime()
         with self.assertRaises(Phase01BPathError) as ctx:
             run_phase01b_join_repair(
                 repo_root=REPO_ROOT,
-                phase01b_runtime=APPROVED_PHASE01B_RUNTIME,
+                phase01b_runtime=phase01b_runtime,
                 out_root=REPO_ROOT,
                 strict=True,
             )

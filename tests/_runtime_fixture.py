@@ -14,7 +14,6 @@ from sll_probabilistic_pipeline.phase01b_join_repair import run_phase01b_join_re
 from sll_probabilistic_pipeline.utils import read_json, read_tsv
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-APPROVED_PHASE01B_RUNTIME = DEFAULT_RESULTS_ROOT / "SLL_PHASE01B_NORMALIZED_INPUT_READER_20260624_093603"
 
 
 def _temp_parent(prefix: str) -> Path:
@@ -49,9 +48,10 @@ def build_phase01b_runtime() -> tuple[Path, dict[str, object]]:
 
 @lru_cache(maxsize=1)
 def build_phase01b_join_repair_runtime() -> tuple[Path, dict[str, object]]:
+    phase01b_runtime, _ = build_phase01b_runtime()
     manifest = run_phase01b_join_repair(
         repo_root=REPO_ROOT,
-        phase01b_runtime=APPROVED_PHASE01B_RUNTIME,
+        phase01b_runtime=phase01b_runtime,
         out_root=DEFAULT_RESULTS_ROOT,
         strict=True,
     )

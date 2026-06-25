@@ -8,7 +8,7 @@ from sll_probabilistic_pipeline.paths import Phase01BPathError, resolve_phase01b
 from sll_probabilistic_pipeline.phase01b_join_repair import _preflight_input_runtime
 from sll_probabilistic_pipeline.utils import read_json, read_tsv
 
-from ._runtime_fixture import APPROVED_PHASE01B_RUNTIME, REPO_ROOT
+from ._runtime_fixture import REPO_ROOT, build_phase01b_runtime
 
 
 class Phase01BJoinRepairPreflightTest(unittest.TestCase):
@@ -23,9 +23,10 @@ class Phase01BJoinRepairPreflightTest(unittest.TestCase):
         self.assertEqual(ctx.exception.code, "PHASE01B_RUNTIME_OUTSIDE_ALLOWED_RESULTS_ROOT")
 
     def test_preflight_rejects_disallowed_warning_rows(self) -> None:
+        approved_phase01b_runtime, _ = build_phase01b_runtime()
         resolved = resolve_phase01b_join_repair_paths(
             repo_root=REPO_ROOT,
-            phase01b_runtime=APPROVED_PHASE01B_RUNTIME,
+            phase01b_runtime=approved_phase01b_runtime,
             out_root=DEFAULT_RESULTS_ROOT,
         )
         input_manifest = read_json(resolved.input_manifest)
@@ -49,9 +50,10 @@ class Phase01BJoinRepairPreflightTest(unittest.TestCase):
             )
 
     def test_preflight_rejects_error_level_failures(self) -> None:
+        approved_phase01b_runtime, _ = build_phase01b_runtime()
         resolved = resolve_phase01b_join_repair_paths(
             repo_root=REPO_ROOT,
-            phase01b_runtime=APPROVED_PHASE01B_RUNTIME,
+            phase01b_runtime=approved_phase01b_runtime,
             out_root=DEFAULT_RESULTS_ROOT,
         )
         input_manifest = read_json(resolved.input_manifest)

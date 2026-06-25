@@ -11,6 +11,13 @@ from ._runtime_fixture import REPO_ROOT, build_phase01b_runtime, phase01b_audit_
 
 
 class Phase01BSmokeTest(unittest.TestCase):
+    REQUIRED_JOIN_OUTPUTS = {
+        "data/join_admissibility_contract.tsv",
+        "data/many_to_many_origin_diagnostic.tsv",
+        "data/policy_surface_non_joinable_registry.tsv",
+        "data/lag_invariant_duplicate_origin_audit.tsv",
+        "data/phase02_join_contract.tsv",
+    }
     REQUIRED_VALIDATION_CHECKS = {
         "output_root_external_boundary",
         "repo_no_contamination",
@@ -29,6 +36,11 @@ class Phase01BSmokeTest(unittest.TestCase):
         "input_surface_availability_no_missing_required",
         "join_audit_exists",
         "join_many_to_many_risk_profiled_not_joined",
+        "many_to_many_origin_diagnostic_complete",
+        "lag_invariant_duplicate_origin_audit_complete",
+        "policy_surface_non_joinable_registry_exists",
+        "join_admissibility_contract_complete",
+        "phase02_join_contract_ready",
         "required_artifacts_exist",
     }
 
@@ -40,6 +52,14 @@ class Phase01BSmokeTest(unittest.TestCase):
         self.assertEqual(manifest["final_go_no_go"], "not_applicable_for_phase01b")
         for relative_path in manifest["outputs"]:
             self.assertTrue((runtime_dir / Path(relative_path)).exists(), relative_path)
+        self.assertTrue(self.REQUIRED_JOIN_OUTPUTS.issubset(set(manifest["outputs"])))
+
+    def test_rebuilt_runtime_materializes_join_contract_surfaces(self) -> None:
+        runtime_dir, _ = build_phase01b_runtime()
+        for relative_path in self.REQUIRED_JOIN_OUTPUTS:
+            self.assertTrue((runtime_dir / Path(relative_path)).exists(), relative_path)
+        self.assertEqual(len(phase01b_rows("join_admissibility_contract.tsv")), 3)
+        self.assertEqual(len(phase01b_rows("phase02_join_contract.tsv")), 3)
 
     def test_repo_contamination_audit_passes(self) -> None:
         runtime_dir, _ = build_phase01b_runtime()
