@@ -5,3 +5,11 @@ SLL_PHASE02_*/
 SLL_PHASE03_*/
 *.runtime.tsv
 *.runtime.json
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
