@@ -15,11 +15,17 @@ DEFAULT_KIN_ROOT = Path(
 DEFAULT_RESULTS_ROOT = Path(
     r"D:\INTERDEPDNDENCIA_ARTIGOS_ANA\PREDICTOR PROBABILIDAD\PREDICTOR RESULTADOS"
 )
+DEFAULT_PHASE01B_REBUILT_RUNTIME = DEFAULT_RESULTS_ROOT / "SLL_PHASE01B_NORMALIZED_INPUT_READER_20260625_094628"
 
-SUPPORTED_PHASES = {"phase01a", "phase01b", "phase01b_join_repair"}
+SUPPORTED_PHASES = {"phase01a", "phase01b", "phase01b_join_repair", "phase02"}
 PHASE01B_RUNTIME_PREFIX = "SLL_PHASE01B_NORMALIZED_INPUT_READER_"
 PHASE01B_JOIN_REPAIR_RUNTIME_PREFIX = "SLL_PHASE01B_JOIN_ROOT_CAUSE_REPAIR_"
 PHASE01B_REPO_OUTPUT_REJECTION_CODE = "PHASE01B_OUTPUT_ROOT_INSIDE_REPO_FORBIDDEN"
+PHASE02_RUNTIME_PREFIX = "SLL_PHASE02_RELATION_EVIDENCE_INTAKE_"
+PHASE02_REPO_OUTPUT_REJECTION_CODE = "PHASE02_OUTPUT_ROOT_INSIDE_REPO_FORBIDDEN"
+PHASE02_CONTROLLER_SHA = "b3a3299164318ef71885ed6d1f801b4aef96b53e"
+PHASE02_APPROVED_COMPLETION_STATE = "PHASE02_RELATION_EVIDENCE_INTAKE_COMPLETE_WAITING_FOR_PHASE03_PLAN"
+PHASE02_BLOCKED_STATE = "PHASE02_RELATION_EVIDENCE_INTAKE_BLOCKED"
 
 PHASE01A_OUTPUTS = (
     "growth_variable_identity_audit.tsv",
@@ -80,6 +86,74 @@ PHASE01B_JOIN_REPAIR_REQUIRED_OUTPUTS = (
     "audit/output_root_boundary_audit.tsv",
     "audit/repo_contamination_audit.tsv",
     "audit/many_to_many_root_cause_validation_summary.tsv",
+)
+PHASE02_REQUIRED_INPUTS = (
+    "manifest/runtime_manifest.json",
+    "audit/phase01b_validation_summary.tsv",
+    "data/input_path_resolution_audit.tsv",
+    "data/input_surface_availability_audit.tsv",
+    "data/input_schema_inventory.tsv",
+    "data/input_data_basis_policy_audit.tsv",
+    "data/growth_variable_identity_audit.tsv",
+    "data/acetate_dual_role_audit.tsv",
+    "data/canonical_component_alias_registry.tsv",
+    "data/component_role_by_condition_audit.tsv",
+    "data/cross_layer_join_identity_policy.tsv",
+    "data/phase01a_policy_carry_forward_audit.tsv",
+    "data/stat_pcmci_edge_long.tsv",
+    "data/stat_pcmci_model_context_long.tsv",
+    "data/stat_descriptive_node_state_long.tsv",
+    "data/stat_interdependence_pair_window_long.tsv",
+    "data/stat_conditioned_pair_global_long.tsv",
+    "data/stat_dense_data_provenance_long.tsv",
+    "data/kinetic_growth_primary_long.tsv",
+    "data/kinetic_rate_primary_long.tsv",
+    "data/kinetic_temporal_coupling_primary_long.tsv",
+    "data/kinetic_yield_primary_long.tsv",
+    "data/kinetic_disabled_branch_inventory.tsv",
+    "data/kinetic_traceability_long.tsv",
+    "data/input_join_key_audit.tsv",
+    "data/many_to_many_origin_diagnostic.tsv",
+    "data/per_surface_natural_key_profile.tsv",
+    "data/candidate_key_uniqueness_profile.tsv",
+    "data/lag_invariant_duplicate_origin_audit.tsv",
+    "data/policy_surface_non_joinable_registry.tsv",
+    "data/join_admissibility_contract.tsv",
+    "data/phase02_join_contract.tsv",
+    "data/input_empty_surface_audit.tsv",
+)
+PHASE02_REQUIRED_OUTPUTS = (
+    "manifest/runtime_manifest.json",
+    "data/phase02_input_runtime_manifest_audit.tsv",
+    "data/phase02_input_surface_manifest.tsv",
+    "data/phase02_preflight_audit.tsv",
+    "data/relation_anchor_registry.tsv",
+    "data/stat_temporal_pcmci_evidence_intake.tsv",
+    "data/stat_descriptive_evidence_intake.tsv",
+    "data/stat_interdependence_evidence_intake.tsv",
+    "data/stat_conditioned_pair_evidence_intake.tsv",
+    "data/kinetic_growth_evidence_intake.tsv",
+    "data/kinetic_rate_evidence_intake.tsv",
+    "data/kinetic_temporal_coupling_evidence_intake.tsv",
+    "data/kinetic_yield_evidence_intake.tsv",
+    "data/phase02_join_contract_consumption_audit.tsv",
+    "data/relation_evidence_tensor.tsv",
+    "data/phase02_forbidden_output_scan.tsv",
+    "data/phase02_empty_or_absent_evidence_audit.tsv",
+    "audit/output_root_boundary_audit.tsv",
+    "audit/repo_contamination_audit.tsv",
+    "audit/phase02_validation_summary.tsv",
+)
+PHASE02_FORBIDDEN_OUTPUTS = (
+    "data/posterior_relation_state.tsv",
+    "data/posterior_relation_state.json",
+    "data/runtime_question_answer_matrix.tsv",
+    "data/runtime_question_answer_matrix.json",
+    "data/question_answer_evidence_trace.tsv",
+    "data/network_topology_summary.tsv",
+    "data/network_topology_summary.json",
+    "data/final_static_release_decision.json",
+    "data/final_machine_readable_consistency_audit.tsv",
 )
 
 STAT_RUN_REQUIRED_SURFACES = (

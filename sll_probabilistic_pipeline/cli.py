@@ -9,6 +9,7 @@ from .config import SUPPORTED_PHASES
 from .phase01a import run_phase01a
 from .phase01b import run_phase01b
 from .phase01b_join_repair import run_phase01b_join_repair
+from .phase02 import run_phase02
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -67,6 +68,23 @@ def main(argv: list[str] | None = None) -> int:
         )
         print("phase01b_join_repair_complete")
         print(manifest["phase02_plan_decision"])
+        return 0
+    if args.phase == "phase02":
+        if args.stat_root or args.kin_root:
+            parser.error("--stat-root and --kin-root are not accepted for phase02")
+        if not args.repo_root:
+            parser.error("--repo-root is required for phase02")
+        if not args.phase01b_runtime:
+            parser.error("--phase01b-runtime is required for phase02")
+        manifest = run_phase02(
+            repo_root=args.repo_root,
+            phase01b_runtime=args.phase01b_runtime,
+            out_root=args.out_root,
+            strict=args.strict,
+        )
+        print("phase02_complete")
+        print(manifest["phase_status"])
+        print(manifest["phase02_completion_decision"])
         return 0
     return 1
 
