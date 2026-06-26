@@ -16,8 +16,9 @@ DEFAULT_RESULTS_ROOT = Path(
     r"D:\INTERDEPDNDENCIA_ARTIGOS_ANA\PREDICTOR PROBABILIDAD\PREDICTOR RESULTADOS"
 )
 DEFAULT_PHASE01B_REBUILT_RUNTIME = DEFAULT_RESULTS_ROOT / "SLL_PHASE01B_NORMALIZED_INPUT_READER_20260625_094628"
+DEFAULT_PHASE02_REBUILT_RUNTIME = DEFAULT_RESULTS_ROOT / "SLL_PHASE02_RELATION_EVIDENCE_INTAKE_20260626_112045"
 
-SUPPORTED_PHASES = {"phase01a", "phase01b", "phase01b_join_repair", "phase02"}
+SUPPORTED_PHASES = {"phase01a", "phase01b", "phase01b_join_repair", "phase02", "phase03a"}
 PHASE01B_RUNTIME_PREFIX = "SLL_PHASE01B_NORMALIZED_INPUT_READER_"
 PHASE01B_JOIN_REPAIR_RUNTIME_PREFIX = "SLL_PHASE01B_JOIN_ROOT_CAUSE_REPAIR_"
 PHASE01B_REPO_OUTPUT_REJECTION_CODE = "PHASE01B_OUTPUT_ROOT_INSIDE_REPO_FORBIDDEN"
@@ -26,6 +27,11 @@ PHASE02_REPO_OUTPUT_REJECTION_CODE = "PHASE02_OUTPUT_ROOT_INSIDE_REPO_FORBIDDEN"
 PHASE02_CONTROLLER_SHA = "b3a3299164318ef71885ed6d1f801b4aef96b53e"
 PHASE02_APPROVED_COMPLETION_STATE = "PHASE02_RELATION_EVIDENCE_INTAKE_COMPLETE_WAITING_FOR_PHASE03_PLAN"
 PHASE02_BLOCKED_STATE = "PHASE02_RELATION_EVIDENCE_INTAKE_BLOCKED"
+PHASE03A_RUNTIME_PREFIX = "SLL_PHASE03A_PROBABILISTIC_CALIBRATION_"
+PHASE03A_REPO_OUTPUT_REJECTION_CODE = "PHASE03A_OUTPUT_ROOT_INSIDE_REPO_FORBIDDEN"
+PHASE03A_CONTROLLER_SHA = "334057762e47bc69e6e8d0b96a7a642bf204302a"
+PHASE03A_APPROVED_COMPLETION_STATE = "PHASE03A_PROBABILISTIC_CALIBRATION_COMPLETE_WAITING_FOR_PHASE03B_PLAN"
+PHASE03A_BLOCKED_STATE = "PHASE03A_PROBABILISTIC_CALIBRATION_BLOCKED"
 
 PHASE01A_OUTPUTS = (
     "growth_variable_identity_audit.tsv",
@@ -154,6 +160,83 @@ PHASE02_FORBIDDEN_OUTPUTS = (
     "data/network_topology_summary.json",
     "data/final_static_release_decision.json",
     "data/final_machine_readable_consistency_audit.tsv",
+)
+PHASE03A_REQUIRED_INPUTS = (
+    "manifest/runtime_manifest.json",
+    "audit/phase02_validation_summary.tsv",
+    "data/phase02_preflight_audit.tsv",
+    "data/phase02_input_surface_manifest.tsv",
+    "data/phase02_join_contract_consumption_audit.tsv",
+    "data/relation_anchor_registry.tsv",
+    "data/stat_temporal_pcmci_evidence_intake.tsv",
+    "data/stat_descriptive_evidence_intake.tsv",
+    "data/stat_interdependence_evidence_intake.tsv",
+    "data/stat_conditioned_pair_evidence_intake.tsv",
+    "data/kinetic_growth_evidence_intake.tsv",
+    "data/kinetic_rate_evidence_intake.tsv",
+    "data/kinetic_temporal_coupling_evidence_intake.tsv",
+    "data/kinetic_yield_evidence_intake.tsv",
+    "data/relation_evidence_tensor.tsv",
+    "data/phase02_forbidden_output_scan.tsv",
+    "data/phase02_empty_or_absent_evidence_audit.tsv",
+)
+PHASE03A_REQUIRED_OUTPUTS = (
+    "manifest/runtime_manifest.json",
+    "data/phase03_input_runtime_manifest_audit.tsv",
+    "data/phase03_input_surface_manifest.tsv",
+    "data/phase03_preflight_audit.tsv",
+    "data/probability_method_manifest.tsv",
+    "data/probability_method_manifest.json",
+    "data/temporal_pcmci_evidence_stat_surface.tsv",
+    "data/temporal_pcmci_calibration_surface.tsv",
+    "data/multilag_temporal_profile_surface.tsv",
+    "data/conditioned_pair_probability_evidence_surface.tsv",
+    "data/descriptive_probability_evidence_surface.tsv",
+    "data/interdependence_probability_evidence_surface.tsv",
+    "data/kinetic_likelihood_surface.tsv",
+    "data/semantic_polarity_registry.tsv",
+    "data/semantic_compatibility_surface.tsv",
+    "data/relation_probability_evidence_tensor.tsv",
+    "data/posterior_relation_state.tsv",
+    "data/posterior_relation_state.json",
+    "data/probability_calibration_audit.tsv",
+    "data/probability_limitations_audit.tsv",
+    "data/phase03_forbidden_output_scan.tsv",
+    "data/phase03_empty_or_absent_probability_audit.tsv",
+    "audit/output_root_boundary_audit.tsv",
+    "audit/repo_contamination_audit.tsv",
+    "audit/phase03_validation_summary.tsv",
+)
+PHASE03A_FORBIDDEN_OUTPUTS = (
+    "data/runtime_question_answer_matrix.tsv",
+    "data/runtime_question_answer_matrix.json",
+    "data/question_answer_evidence_trace.tsv",
+    "data/network_topology_summary.tsv",
+    "data/network_topology_summary.json",
+    "data/final_static_release_decision.json",
+    "data/final_machine_readable_consistency_audit.tsv",
+    "report/TECHNICAL_QUESTION_ANSWER_REPORT_*.md",
+    "report/HUMAN_REPORT_*.md",
+)
+PHASE03A_FORBIDDEN_INPUT_PATH_MARKERS = (
+    r"D:\INTERDEPDNDENCIA_ARTIGOS_ANA\INTERDEPENDENCIA_ANA_ARTIGOS\runs",
+    r"D:\INTERDEPDNDENCIA_ARTIGOS_ANA\INTERDEPENDENCIA_ANA_ARTIGOS\Rates calculations",
+    "SLL_PHASE01B_",
+)
+PHASE03A_FORBIDDEN_POSTERIOR_SOURCE_COLUMNS = (
+    "posterior_probability",
+    "P_signal",
+    "P_state",
+    "causal_probability",
+    "final_score",
+    "qa_answer_state",
+    "network_degree",
+    "final_go_no_go",
+    "p_positive_support",
+    "p_negative_support",
+    "p_ambiguous_or_mixed",
+    "p_insufficient_or_uninformative",
+    "posterior_state_argmax",
 )
 
 STAT_RUN_REQUIRED_SURFACES = (

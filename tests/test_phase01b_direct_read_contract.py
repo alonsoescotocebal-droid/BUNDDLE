@@ -28,7 +28,10 @@ class Phase01BDirectReadContractTest(unittest.TestCase):
         self.assertTrue(set(self.REQUIRED_JOIN_OUTPUTS).issubset(PHASE01B_REQUIRED_OUTPUTS))
 
     def test_supported_phases_now_include_phase02(self) -> None:
-        self.assertEqual(SUPPORTED_PHASES, {"phase01a", "phase01b", "phase01b_join_repair", "phase02"})
+        self.assertEqual(
+            SUPPORTED_PHASES,
+            {"phase01a", "phase01b", "phase01b_join_repair", "phase02", "phase03a"},
+        )
         self.assertIn("phase02", SUPPORTED_PHASES)
 
     def test_runtime_manifest_lists_optional_join_profiles_when_written(self) -> None:

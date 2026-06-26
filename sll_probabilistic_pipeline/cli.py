@@ -10,6 +10,7 @@ from .phase01a import run_phase01a
 from .phase01b import run_phase01b
 from .phase01b_join_repair import run_phase01b_join_repair
 from .phase02 import run_phase02
+from .phase03a import run_phase03a
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -20,6 +21,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--phase", default="phase01a")
     parser.add_argument("--repo-root")
     parser.add_argument("--phase01b-runtime")
+    parser.add_argument("--phase02-runtime")
     parser.add_argument("--strict", action="store_true")
     return parser
 
@@ -85,6 +87,25 @@ def main(argv: list[str] | None = None) -> int:
         print("phase02_complete")
         print(manifest["phase_status"])
         print(manifest["phase02_completion_decision"])
+        return 0
+    if args.phase == "phase03a":
+        if args.stat_root or args.kin_root:
+            parser.error("--stat-root and --kin-root are not accepted for phase03a")
+        if args.phase01b_runtime:
+            parser.error("--phase01b-runtime is not accepted for phase03a")
+        if not args.repo_root:
+            parser.error("--repo-root is required for phase03a")
+        if not args.phase02_runtime:
+            parser.error("--phase02-runtime is required for phase03a")
+        manifest = run_phase03a(
+            repo_root=args.repo_root,
+            phase02_runtime=args.phase02_runtime,
+            out_root=args.out_root,
+            strict=args.strict,
+        )
+        print("phase03a_complete")
+        print(manifest["phase_status"])
+        print(manifest["phase03a_completion_decision"])
         return 0
     return 1
 
