@@ -30,7 +30,7 @@ class Phase01BDirectReadContractTest(unittest.TestCase):
     def test_supported_phases_now_include_phase02(self) -> None:
         self.assertEqual(
             SUPPORTED_PHASES,
-            {"phase01a", "phase01b", "phase01b_join_repair", "phase02", "phase03a"},
+            {"phase01a", "phase01b", "phase01b_join_repair", "phase02", "phase03a", "phase03b1"},
         )
         self.assertIn("phase02", SUPPORTED_PHASES)
 

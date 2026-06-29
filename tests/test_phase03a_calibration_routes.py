@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import csv
+from pathlib import Path
 import unittest
 
 from sll_probabilistic_pipeline.phase03a import _build_temporal_pcmci_calibration_surface
 
-from ._runtime_fixture import phase03a_rows
+from ._runtime_fixture import build_phase03a_runtime, phase03a_audit_rows, phase03a_rows
 
 
 class Phase03ACalibrationRoutesTest(unittest.TestCase):
@@ -37,6 +39,28 @@ class Phase03ACalibrationRoutesTest(unittest.TestCase):
         rows, _ = _build_temporal_pcmci_calibration_surface(stat_rows)
         self.assertTrue(rows)
         self.assertTrue(all(row["calibration_route"] == "conservative_logistic_fallback" for row in rows))
+
+    def test_probability_calibration_audit_row_counts_match_temporal_surface(self) -> None:
+        runtime_dir, _ = build_phase03a_runtime()
+        temporal_rows = phase03a_rows("temporal_pcmci_calibration_surface.tsv")
+        expected_counts: dict[str, int] = {}
+        for row in temporal_rows:
+            expected_counts[row["run_max_lag"]] = expected_counts.get(row["run_max_lag"], 0) + 1
+
+        audit_path = runtime_dir / "data" / "probability_calibration_audit.tsv"
+        with audit_path.open("r", encoding="utf-8-sig", newline="") as handle:
+            audit_rows = list(csv.DictReader(handle, delimiter="\t"))
+        actual_counts = {
+            row["calibration_group"]: int(row["row_count"])
+            for row in audit_rows
+            if row["audit_scope"] == "run_max_lag"
+        }
+        self.assertEqual(actual_counts, expected_counts)
+
+    def test_validation_reports_calibration_audit_row_counts_match(self) -> None:
+        rows = phase03a_audit_rows("phase03_validation_summary.tsv")
+        indexed = {row["check_id"]: row for row in rows}
+        self.assertEqual(indexed["probability_calibration_audit_row_counts_match"]["status"], "PASS")
 
 
 if __name__ == "__main__":

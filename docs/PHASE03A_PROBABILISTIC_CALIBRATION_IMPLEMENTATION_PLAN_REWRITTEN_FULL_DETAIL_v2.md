@@ -166,7 +166,7 @@ Phase03A must not generate:
 - `posterior_not_final_decision`
 - `forbidden_outputs_absent`
 - `required_artifacts_exist`
-- `phase03a_status_complete_waiting_for_phase03b_plan`
+- `phase03a_repaired_and_phase03b_plan_allowed`
 
 Success requires `0` WARN/warning and `0` FAIL/error rows.
 
@@ -180,7 +180,7 @@ python -m sll_probabilistic_pipeline.cli --phase phase03a --repo-root "D:\INTERD
 
 Phase03A is complete only when the runtime decision is:
 
-`PHASE03A_PROBABILISTIC_CALIBRATION_COMPLETE_WAITING_FOR_PHASE03B_PLAN`
+`PHASE03A_REPAIRED_AND_PHASE03B_PLAN_ALLOWED`
 
 The next allowed phase is planning only:
 

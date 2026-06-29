@@ -20,6 +20,8 @@ from .config import (
     PHASE03A_REPO_OUTPUT_REJECTION_CODE,
     PHASE03A_RUNTIME_PREFIX,
     PHASE03A_REQUIRED_INPUTS,
+    PHASE03B1_REPO_OUTPUT_REJECTION_CODE,
+    PHASE03B1_RUNTIME_PREFIX,
     SCENARIO_ALIASES,
     STAT_RUN_REQUIRED_SURFACES,
 )
@@ -44,6 +46,14 @@ class Phase02PathError(RuntimeError):
 
 class Phase03APathError(RuntimeError):
     """Phase 03A path validation error with a stable machine-readable code."""
+
+    def __init__(self, code: str, message: str) -> None:
+        super().__init__(message)
+        self.code = code
+
+
+class Phase03B1PathError(RuntimeError):
+    """Phase 03B1 path validation error with a stable machine-readable code."""
 
     def __init__(self, code: str, message: str) -> None:
         super().__init__(message)
@@ -130,6 +140,17 @@ class ResolvedPhase02Paths:
 class ResolvedPhase03APaths:
     repo_root: Path
     phase02_runtime: Path
+    requested_out_root: Path
+    allowed_results_root: Path
+    runtime_root: Path
+    input_manifest: Path
+    input_validation_summary: Path
+
+
+@dataclass(frozen=True)
+class ResolvedPhase03B1Paths:
+    repo_root: Path
+    phase03a_runtime: Path
     requested_out_root: Path
     allowed_results_root: Path
     runtime_root: Path
@@ -478,4 +499,47 @@ def resolve_phase03a_paths(
         runtime_root=runtime_root,
         input_manifest=phase02_runtime_path / "manifest" / "runtime_manifest.json",
         input_validation_summary=phase02_runtime_path / "audit" / "phase02_validation_summary.tsv",
+    )
+
+
+def resolve_phase03b1_paths(
+    repo_root: str | Path,
+    phase03a_runtime: str | Path,
+    out_root: str | Path,
+    *,
+    strict: bool,
+) -> ResolvedPhase03B1Paths:
+    del strict
+    repo_root_path = Path(repo_root).resolve(strict=False)
+    phase03a_runtime_path = Path(phase03a_runtime).resolve(strict=False)
+    requested_out_root = Path(out_root).resolve(strict=False)
+    allowed_results_root = DEFAULT_RESULTS_ROOT.resolve(strict=False)
+
+    if not repo_root_path.exists():
+        raise FileNotFoundError(f"repo-root does not exist: {repo_root_path}")
+    if requested_out_root == repo_root_path or is_same_or_within(requested_out_root, repo_root_path):
+        raise Phase03B1PathError(
+            PHASE03B1_REPO_OUTPUT_REJECTION_CODE,
+            f"{PHASE03B1_REPO_OUTPUT_REJECTION_CODE}: out-root {requested_out_root} is inside repo {repo_root_path}",
+        )
+    if not is_same_or_within(requested_out_root, allowed_results_root):
+        raise Phase03B1PathError(
+            "PHASE03B1_OUTPUT_ROOT_OUTSIDE_ALLOWED_RESULTS_ROOT",
+            f"out-root {requested_out_root} is outside allowed results root {allowed_results_root}",
+        )
+    if not is_same_or_within(phase03a_runtime_path, allowed_results_root):
+        raise Phase03B1PathError(
+            "PHASE03B1_INPUT_RUNTIME_OUTSIDE_ALLOWED_RESULTS_ROOT",
+            f"phase03a-runtime {phase03a_runtime_path} is outside allowed results root {allowed_results_root}",
+        )
+
+    runtime_root = requested_out_root / f"{PHASE03B1_RUNTIME_PREFIX}{utc_stamp()}"
+    return ResolvedPhase03B1Paths(
+        repo_root=repo_root_path,
+        phase03a_runtime=phase03a_runtime_path,
+        requested_out_root=requested_out_root,
+        allowed_results_root=allowed_results_root,
+        runtime_root=runtime_root,
+        input_manifest=phase03a_runtime_path / "manifest" / "runtime_manifest.json",
+        input_validation_summary=phase03a_runtime_path / "audit" / "phase03_validation_summary.tsv",
     )

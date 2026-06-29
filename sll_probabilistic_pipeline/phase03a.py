@@ -181,6 +181,7 @@ def run_phase03a(
             preflight_rows=preflight_rows,
             method_manifest={},
             temporal_calibration_rows=[],
+            probability_calibration_audit_rows=[],
             multilag_rows=[],
             kinetic_rows=[],
             semantic_registry_rows=[],
@@ -552,6 +553,7 @@ def run_phase03a(
         preflight_rows=preflight_rows,
         method_manifest=method_manifest_json,
         temporal_calibration_rows=temporal_calibration_rows,
+        probability_calibration_audit_rows=probability_calibration_audit_rows,
         multilag_rows=multilag_rows,
         kinetic_rows=kinetic_rows,
         semantic_registry_rows=semantic_registry_rows,
@@ -1470,7 +1472,7 @@ def _build_relation_probability_evidence_tensor(
                 "logit_negative": f"{logit_negative:.12f}",
                 "logit_ambiguous": f"{logit_ambiguous:.12f}",
                 "logit_insufficient": f"{logit_insufficient:.12f}",
-                "not_posterior_yes_no": "no",
+                "not_posterior_yes_no": "yes",
                 "not_causal_probability_yes_no": "yes",
                 "trace_id": stable_trace_id("phase03a_probability_tensor", relation_anchor_id),
             }
@@ -1624,29 +1626,31 @@ def _build_probability_calibration_audit(
     calibration_metadata: dict[str, object],
     temporal_calibration_rows: list[dict[str, object]],
 ) -> list[dict[str, object]]:
-    route_counts: dict[str, int] = {}
+    counts_by_lag: dict[str, list[dict[str, object]]] = {}
     for row in temporal_calibration_rows:
-        route_counts[str(row.get("calibration_route", ""))] = route_counts.get(str(row.get("calibration_route", "")), 0) + 1
+        counts_by_lag.setdefault(str(row.get("run_max_lag", "")), []).append(row)
     rows: list[dict[str, object]] = []
-    for lag, route_meta in sorted(calibration_metadata.get("routes_by_lag", {}).items()):
+    for lag, lag_rows in sorted(counts_by_lag.items()):
+        route_meta = calibration_metadata.get("routes_by_lag", {}).get(lag, {})
+        route_values = sorted({str(row.get("calibration_route", "")) for row in lag_rows})
         rows.append(
             {
                 "audit_scope": "run_max_lag",
                 "calibration_group": lag,
-                "calibration_route": route_meta.get("route", ""),
+                "calibration_route": route_meta.get("route", "") or ",".join(route_values),
                 "status": "documented",
-                "row_count": route_counts.get(str(route_meta.get("route", "")), 0),
-                "details": route_meta.get("fallback_reason", "") or route_meta.get("status", ""),
+                "row_count": len(lag_rows),
+                "details": route_meta.get("fallback_reason", "") or route_meta.get("status", "") or f"routes={','.join(route_values)}",
             }
         )
-    if route_counts:
+    if counts_by_lag:
         rows.append(
             {
                 "audit_scope": "all_rows",
                 "calibration_group": "runtime",
-                "calibration_route": ",".join(sorted(route_counts)),
+                "calibration_route": ",".join(sorted({str(row.get("calibration_route", "")) for row in temporal_calibration_rows})),
                 "status": "documented",
-                "row_count": sum(route_counts.values()),
+                "row_count": len(temporal_calibration_rows),
                 "details": f"pooled_feasible={calibration_metadata.get('pooled_feasible')}",
             }
         )

@@ -17,8 +17,10 @@ DEFAULT_RESULTS_ROOT = Path(
 )
 DEFAULT_PHASE01B_REBUILT_RUNTIME = DEFAULT_RESULTS_ROOT / "SLL_PHASE01B_NORMALIZED_INPUT_READER_20260625_094628"
 DEFAULT_PHASE02_REBUILT_RUNTIME = DEFAULT_RESULTS_ROOT / "SLL_PHASE02_RELATION_EVIDENCE_INTAKE_20260626_112045"
+DEFAULT_PHASE03A_REPAIRED_RUNTIME = DEFAULT_RESULTS_ROOT / "SLL_PHASE03A_PROBABILISTIC_CALIBRATION_20260626_131002"
+DEFAULT_PHASE03A_SUPERSEDED_RUNTIME = DEFAULT_RESULTS_ROOT / "SLL_PHASE03A_PROBABILISTIC_CALIBRATION_20260626_121943"
 
-SUPPORTED_PHASES = {"phase01a", "phase01b", "phase01b_join_repair", "phase02", "phase03a"}
+SUPPORTED_PHASES = {"phase01a", "phase01b", "phase01b_join_repair", "phase02", "phase03a", "phase03b1"}
 PHASE01B_RUNTIME_PREFIX = "SLL_PHASE01B_NORMALIZED_INPUT_READER_"
 PHASE01B_JOIN_REPAIR_RUNTIME_PREFIX = "SLL_PHASE01B_JOIN_ROOT_CAUSE_REPAIR_"
 PHASE01B_REPO_OUTPUT_REJECTION_CODE = "PHASE01B_OUTPUT_ROOT_INSIDE_REPO_FORBIDDEN"
@@ -30,8 +32,12 @@ PHASE02_BLOCKED_STATE = "PHASE02_RELATION_EVIDENCE_INTAKE_BLOCKED"
 PHASE03A_RUNTIME_PREFIX = "SLL_PHASE03A_PROBABILISTIC_CALIBRATION_"
 PHASE03A_REPO_OUTPUT_REJECTION_CODE = "PHASE03A_OUTPUT_ROOT_INSIDE_REPO_FORBIDDEN"
 PHASE03A_CONTROLLER_SHA = "334057762e47bc69e6e8d0b96a7a642bf204302a"
-PHASE03A_APPROVED_COMPLETION_STATE = "PHASE03A_PROBABILISTIC_CALIBRATION_COMPLETE_WAITING_FOR_PHASE03B_PLAN"
+PHASE03A_APPROVED_COMPLETION_STATE = "PHASE03A_REPAIRED_AND_PHASE03B_PLAN_ALLOWED"
 PHASE03A_BLOCKED_STATE = "PHASE03A_PROBABILISTIC_CALIBRATION_BLOCKED"
+PHASE03B1_RUNTIME_PREFIX = "SLL_PHASE03B1_QA22_TOPOLOGY_TRACE_"
+PHASE03B1_REPO_OUTPUT_REJECTION_CODE = "PHASE03B1_OUTPUT_ROOT_INSIDE_REPO_FORBIDDEN"
+PHASE03B1_APPROVED_COMPLETION_STATE = "PHASE03B1_QA22_TOPOLOGY_TRACE_COMPLETE_WAITING_FOR_PHASE03B2_PLAN"
+PHASE03B1_BLOCKED_STATE = "PHASE03B1_BLOCKED_PENDING_REPAIRED_PHASE03A_DIRECT_READ"
 
 PHASE01A_OUTPUTS = (
     "growth_variable_identity_audit.tsv",
@@ -215,6 +221,51 @@ PHASE03A_FORBIDDEN_OUTPUTS = (
     "data/network_topology_summary.json",
     "data/final_static_release_decision.json",
     "data/final_machine_readable_consistency_audit.tsv",
+    "report/TECHNICAL_QUESTION_ANSWER_REPORT_*.md",
+    "report/HUMAN_REPORT_*.md",
+)
+PHASE03B1_REQUIRED_INPUTS = (
+    "manifest/runtime_manifest.json",
+    "audit/phase03_validation_summary.tsv",
+    "data/posterior_relation_state.tsv",
+    "data/posterior_relation_state.json",
+    "data/relation_probability_evidence_tensor.tsv",
+    "data/temporal_pcmci_evidence_stat_surface.tsv",
+    "data/temporal_pcmci_calibration_surface.tsv",
+    "data/multilag_temporal_profile_surface.tsv",
+    "data/conditioned_pair_probability_evidence_surface.tsv",
+    "data/descriptive_probability_evidence_surface.tsv",
+    "data/interdependence_probability_evidence_surface.tsv",
+    "data/kinetic_likelihood_surface.tsv",
+    "data/semantic_polarity_registry.tsv",
+    "data/semantic_compatibility_surface.tsv",
+    "data/probability_method_manifest.tsv",
+    "data/probability_method_manifest.json",
+    "data/probability_calibration_audit.tsv",
+    "data/probability_limitations_audit.tsv",
+    "data/phase03_forbidden_output_scan.tsv",
+    "data/phase03_empty_or_absent_probability_audit.tsv",
+    "audit/output_root_boundary_audit.tsv",
+    "audit/repo_contamination_audit.tsv",
+)
+PHASE03B1_REQUIRED_OUTPUTS = (
+    "manifest/runtime_manifest.json",
+    "data/intervention_priority_surface.tsv",
+    "data/network_topology_summary.tsv",
+    "data/network_topology_summary.json",
+    "data/runtime_question_answer_matrix.tsv",
+    "data/runtime_question_answer_matrix.json",
+    "data/question_answer_evidence_trace.tsv",
+    "data/question_answer_surface_coverage_audit.tsv",
+    "data/question_answer_failure_boundary_audit.tsv",
+    "data/phase03b1_forbidden_output_scan.tsv",
+    "audit/output_root_boundary_audit.tsv",
+    "audit/repo_contamination_audit.tsv",
+    "audit/phase03b1_validation_summary.tsv",
+)
+PHASE03B1_FORBIDDEN_OUTPUTS = (
+    "data/final_machine_readable_consistency_audit.tsv",
+    "data/final_static_release_decision.json",
     "report/TECHNICAL_QUESTION_ANSWER_REPORT_*.md",
     "report/HUMAN_REPORT_*.md",
 )

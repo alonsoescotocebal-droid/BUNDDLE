@@ -35,6 +35,8 @@ class Phase03ASmokeTest(unittest.TestCase):
         "calibration_route_declared",
         "empirical_or_fallback_route_justified",
         "probability_method_manifest_exists",
+        "relation_probability_evidence_tensor_not_posterior",
+        "probability_calibration_audit_row_counts_match",
         "semantic_polarity_registry_exists",
         "semantic_compatibility_surface_exists",
         "multilag_profile_preserved",
@@ -49,7 +51,7 @@ class Phase03ASmokeTest(unittest.TestCase):
         "posterior_not_final_decision",
         "forbidden_outputs_absent",
         "required_artifacts_exist",
-        "phase03a_status_complete_waiting_for_phase03b_plan",
+        "phase03a_repaired_and_phase03b_plan_allowed",
     }
 
     def test_manifest_and_required_artifacts_exist(self) -> None:

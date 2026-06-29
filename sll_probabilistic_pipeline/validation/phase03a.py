@@ -53,6 +53,7 @@ def build_phase03a_validation_summary(
     preflight_rows: list[dict[str, object]],
     method_manifest: dict[str, object],
     temporal_calibration_rows: list[dict[str, object]],
+    probability_calibration_audit_rows: list[dict[str, object]],
     multilag_rows: list[dict[str, object]],
     kinetic_rows: list[dict[str, object]],
     semantic_registry_rows: list[dict[str, object]],
@@ -200,6 +201,41 @@ def build_phase03a_validation_summary(
             "data/probability_method_manifest.json",
             "method_manifest",
             str(method_manifest.get("method_version", "")),
+        )
+    )
+
+    probability_tensor_not_posterior = bool(probability_tensor_rows) and all(
+        row.get("not_posterior_yes_no") == "yes" for row in probability_tensor_rows
+    )
+    rows.append(
+        _summary_row(
+            "relation_probability_evidence_tensor_not_posterior",
+            "PASS" if probability_tensor_not_posterior else "FAIL",
+            "info" if probability_tensor_not_posterior else "error",
+            "data/relation_probability_evidence_tensor.tsv",
+            "not_posterior_yes_no",
+            f"row_count={len(probability_tensor_rows)}",
+        )
+    )
+
+    calibration_expected_counts = _counts_by_run_max_lag(temporal_calibration_rows)
+    calibration_audit_counts = {
+        str(row.get("calibration_group", "")): int(float(row.get("row_count", 0) or 0))
+        for row in probability_calibration_audit_rows
+        if row.get("audit_scope") == "run_max_lag"
+    }
+    calibration_row_counts_match = (
+        bool(temporal_calibration_rows)
+        and calibration_expected_counts == calibration_audit_counts
+    )
+    rows.append(
+        _summary_row(
+            "probability_calibration_audit_row_counts_match",
+            "PASS" if calibration_row_counts_match else "FAIL",
+            "info" if calibration_row_counts_match else "error",
+            "data/probability_calibration_audit.tsv",
+            "run_max_lag",
+            f"expected={calibration_expected_counts};actual={calibration_audit_counts}",
         )
     )
 
@@ -383,7 +419,7 @@ def build_phase03a_validation_summary(
     status_complete = manifest.get("phase03a_completion_decision") == PHASE03A_APPROVED_COMPLETION_STATE
     rows.append(
         _summary_row(
-            "phase03a_status_complete_waiting_for_phase03b_plan",
+            "phase03a_repaired_and_phase03b_plan_allowed",
             "PASS" if status_complete else "FAIL",
             "info" if status_complete else "error",
             "manifest/runtime_manifest.json",
@@ -449,6 +485,14 @@ def _posterior_flag_check(
         field,
         f"row_count={len(posterior_rows)}",
     )
+
+
+def _counts_by_run_max_lag(rows: list[dict[str, object]]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for row in rows:
+        lag = str(row.get("run_max_lag", ""))
+        counts[lag] = counts.get(lag, 0) + 1
+    return counts
 
 
 def _summary_row(

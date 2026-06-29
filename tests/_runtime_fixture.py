@@ -11,6 +11,7 @@ from sll_probabilistic_pipeline.config import (
     DEFAULT_KIN_ROOT,
     DEFAULT_PHASE01B_REBUILT_RUNTIME,
     DEFAULT_PHASE02_REBUILT_RUNTIME,
+    DEFAULT_PHASE03A_REPAIRED_RUNTIME,
     DEFAULT_RESULTS_ROOT,
     DEFAULT_STAT_ROOT,
 )
@@ -19,6 +20,7 @@ from sll_probabilistic_pipeline.phase01b import run_phase01b
 from sll_probabilistic_pipeline.phase01b_join_repair import run_phase01b_join_repair
 from sll_probabilistic_pipeline.phase02 import run_phase02
 from sll_probabilistic_pipeline.phase03a import run_phase03a
+from sll_probabilistic_pipeline.phase03b1 import run_phase03b1
 from sll_probabilistic_pipeline.utils import read_json, read_tsv
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -86,6 +88,23 @@ def build_phase03a_runtime() -> tuple[Path, dict[str, object]]:
     manifest = run_phase03a(
         repo_root=REPO_ROOT,
         phase02_runtime=phase02_runtime,
+        out_root=DEFAULT_RESULTS_ROOT,
+        strict=True,
+    )
+    runtime_dir = Path(manifest["runtime_root"])
+    return runtime_dir, manifest
+
+
+@lru_cache(maxsize=1)
+def build_phase03b1_runtime() -> tuple[Path, dict[str, object]]:
+    phase03a_runtime = (
+        DEFAULT_PHASE03A_REPAIRED_RUNTIME
+        if DEFAULT_PHASE03A_REPAIRED_RUNTIME.exists()
+        else build_phase03a_runtime()[0]
+    )
+    manifest = run_phase03b1(
+        repo_root=REPO_ROOT,
+        phase03a_runtime=phase03a_runtime,
         out_root=DEFAULT_RESULTS_ROOT,
         strict=True,
     )
@@ -163,6 +182,21 @@ def phase03a_manifest_payload() -> dict[str, object]:
     return read_json(runtime_dir / "manifest" / "runtime_manifest.json")
 
 
+def phase03b1_rows(filename: str) -> list[dict[str, str]]:
+    runtime_dir, _ = build_phase03b1_runtime()
+    return read_tsv(runtime_dir / "data" / filename)
+
+
+def phase03b1_audit_rows(filename: str) -> list[dict[str, str]]:
+    runtime_dir, _ = build_phase03b1_runtime()
+    return read_tsv(runtime_dir / "audit" / filename)
+
+
+def phase03b1_manifest_payload() -> dict[str, object]:
+    runtime_dir, _ = build_phase03b1_runtime()
+    return read_json(runtime_dir / "manifest" / "runtime_manifest.json")
+
+
 def clone_phase01b_runtime() -> Path:
     source_runtime = DEFAULT_PHASE01B_REBUILT_RUNTIME if DEFAULT_PHASE01B_REBUILT_RUNTIME.exists() else build_phase01b_runtime()[0]
     target = Path(tempfile.mkdtemp(prefix="phase01b_clone_", dir=_temp_parent("tests_phase02_clone")))
@@ -173,6 +207,13 @@ def clone_phase01b_runtime() -> Path:
 def clone_phase02_runtime() -> Path:
     source_runtime = DEFAULT_PHASE02_REBUILT_RUNTIME if DEFAULT_PHASE02_REBUILT_RUNTIME.exists() else build_phase02_runtime()[0]
     target = Path(tempfile.mkdtemp(prefix="phase02_clone_", dir=_temp_parent("tests_phase03a_clone")))
+    shutil.copytree(source_runtime, target / source_runtime.name)
+    return target / source_runtime.name
+
+
+def clone_phase03a_runtime() -> Path:
+    source_runtime = DEFAULT_PHASE03A_REPAIRED_RUNTIME if DEFAULT_PHASE03A_REPAIRED_RUNTIME.exists() else build_phase03a_runtime()[0]
+    target = Path(tempfile.mkdtemp(prefix="phase03a_clone_", dir=_temp_parent("tests_phase03b1_clone")))
     shutil.copytree(source_runtime, target / source_runtime.name)
     return target / source_runtime.name
 
@@ -199,4 +240,9 @@ def cleanup_phase02_runtime() -> None:
 
 def cleanup_phase03a_runtime() -> None:
     runtime_dir, _ = build_phase03a_runtime()
+    shutil.rmtree(runtime_dir, ignore_errors=True)
+
+
+def cleanup_phase03b1_runtime() -> None:
+    runtime_dir, _ = build_phase03b1_runtime()
     shutil.rmtree(runtime_dir, ignore_errors=True)
